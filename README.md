@@ -1,3 +1,3 @@
-# algorithms
+# Algorithms
 
 Famous useful algorithms.
