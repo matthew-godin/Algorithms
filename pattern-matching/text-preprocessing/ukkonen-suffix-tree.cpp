@@ -2,6 +2,8 @@
 #include <climits>
 using namespace std;
 
+int count = 0;
+
 struct SuffixTreeNode {
     SuffixTreeNode *children[CHAR_MAX];
     SuffixTreeNode *suffixLink;
@@ -10,6 +12,7 @@ struct SuffixTreeNode {
     int suffixIndex;
     
     SuffixTreeNode(int startGiven, int *endGiven, SuffixTreeNode *root) {
+        ++count;
         for (char i = 0; i < CHAR_MAX; ++i) {
             children[i] = nullptr;
         }
@@ -84,13 +87,25 @@ void extendSuffixTree(int i, int *remainingSuffixCount, int *activeLength, char 
     }
 }
 
+void print(int start, int end, const string &text) {
+    for (int i = start; i <= end; ++i) {
+        //cout << text[i];
+    }
+}
+
 void setSuffixIndexByDFS(SuffixTreeNode *node, int labelHeight, const string &text) {
     if (node == nullptr) {
         return;
     }
+    if (node->start != -1) {
+        print(node->start, *node->end, text);
+    }
     int leaf = 1;
     for (char i = 0; i < CHAR_MAX; ++i) {
         if (node->children[i] != nullptr) {
+            if (leaf == 1 && node->start != -1) {
+                //cout << " [" << node->suffixIndex << "]" << endl;
+            }
             leaf = 0;
             setSuffixIndexByDFS(node->children[i], labelHeight + edgeLength(node->children[i]),
                 text);
@@ -98,6 +113,7 @@ void setSuffixIndexByDFS(SuffixTreeNode *node, int labelHeight, const string &te
     }
     if (leaf == 1) {
         node->suffixIndex = text.length() - labelHeight;
+        //cout << " [" << node->suffixIndex << "]" << endl;
     }
 }
 
@@ -128,6 +144,30 @@ int traverseEdge(const string &pattern, int i, int start, int end) {
     return 0;
 }
 
+int doTraversalToCountLeaf(SuffixTreeNode *node) {
+    if (node == nullptr) {
+        return 0;
+    }
+    if (node->suffixIndex > -1) {
+        cout << "Found at position : " << node->suffixIndex;
+        return 1;
+    }
+    int leafCount = 0;
+    for (char i = 0; i < CHAR_MAX; ++i) {
+        if (node->children[i] != nullptr) {
+            leafCount += doTraversalToCountLeaf(node->children[i]);
+        }
+    }
+    return leafCount;
+}
+
+int countLeaf(SuffixTreeNode *node) {
+    if (node == nullptr) {
+        return 0;
+    }
+    return doTraversalToCountLeaf(node);
+}
+
 bool searchSuffixTree(SuffixTreeNode *node, const string &pattern, int i = 0) {
     if (node == nullptr) {
         return false;
@@ -138,7 +178,11 @@ bool searchSuffixTree(SuffixTreeNode *node, const string &pattern, int i = 0) {
             return false;
         }
         if (res == 1) {
-            return true;
+            if (node->suffixIndex > -1) {
+                cout << endl << "substring count : 1 and position : " << node->suffixIndex;
+            } else {
+                cout << endl << "substring count : " << countLeaf(node);
+            }
         }
     }
     i += edgeLength(node);
@@ -155,7 +199,6 @@ void buildSuffixTree(const string &text, SuffixTreeNode **root) {
     int remainingSuffixCount = 0;
     SuffixTreeNode *activeNode = *root;
     SuffixTreeNode *lastNewNode = nullptr;
-    int count = 0;
     char activeEdge = -1;
     int activeLength = 0;
     int *splitEnd = nullptr;
@@ -168,11 +211,21 @@ void buildSuffixTree(const string &text, SuffixTreeNode **root) {
 }
 
 int main() {
-    string text = "ASFAINASFPINASFDPSAIBFPISABFB";
-    string pattern = "SFPI";
+    //string text = "ASFAINASFPINASFDPSAIBFPISABFB";
+    string text = "GEEKSFORGEEKS";
+    string pattern = "GEEKS";
     SuffixTreeNode *root;
     buildSuffixTree(text, &root);
-    cout << searchSuffixTree(root, pattern) << endl;
+    for (char i = 0; i < CHAR_MAX; ++i) {
+        if (root->children[i] != nullptr) {
+            cout << (char)(i + ' ') << endl;
+        }
+    }
+    cout << root->start << endl;
+    cout << *root->end << endl;
+    cout << root->suffixIndex << endl;
+    //cout << count << endl;
+    //cout << searchSuffixTree(root, pattern) << endl;
     freeSuffixTreeByPostOrder(root);
     return 0;
 }
