@@ -89,7 +89,7 @@ void extendSuffixTree(int i, int *remainingSuffixCount, int *activeLength, char 
 
 void print(int start, int end, const string &text) {
     for (int i = start; i <= end; ++i) {
-        //cout << text[i];
+        cout << text[i];
     }
 }
 
@@ -104,7 +104,7 @@ void setSuffixIndexByDFS(SuffixTreeNode *node, int labelHeight, const string &te
     for (char i = 0; i < CHAR_MAX; ++i) {
         if (node->children[i] != nullptr) {
             if (leaf == 1 && node->start != -1) {
-                //cout << " [" << node->suffixIndex << "]" << endl;
+                cout << " [" << node->suffixIndex << "]" << endl;
             }
             leaf = 0;
             setSuffixIndexByDFS(node->children[i], labelHeight + edgeLength(node->children[i]),
@@ -113,7 +113,7 @@ void setSuffixIndexByDFS(SuffixTreeNode *node, int labelHeight, const string &te
     }
     if (leaf == 1) {
         node->suffixIndex = text.length() - labelHeight;
-        //cout << " [" << node->suffixIndex << "]" << endl;
+        cout << " [" << node->suffixIndex << "]" << endl;
     }
 }
 
@@ -212,13 +212,30 @@ void buildSuffixTree(const string &text, SuffixTreeNode **root) {
 
 int main() {
     //string text = "ASFAINASFPINASFDPSAIBFPISABFB";
-    string text = "GEEKSFORGEEKS";
+    string text = "abbc";
     string pattern = "GEEKS";
     SuffixTreeNode *root;
     buildSuffixTree(text, &root);
+    cout << root->start << " " << *root->end << " " << root->suffixIndex << endl;
     for (char i = 0; i < CHAR_MAX; ++i) {
         if (root->children[i] != nullptr) {
+            cout << root->children[i]->start << " " << *root->children[i]->end << " "
+            << root->children[i]->suffixIndex << endl;
             cout << (char)(i + ' ') << endl;
+            for (char j = 0; j < CHAR_MAX; ++j) {
+                if (root->children[i]->children[j] != nullptr) {
+                    cout << "=" << root->children[i]->children[j]->start << " "
+                    << *root->children[i]->children[j]->end
+                    << " " << root->children[i]->children[j]->suffixIndex << endl;
+                    cout << "=" << (char)(j + ' ') << endl;
+                    for (char k = 0; k < CHAR_MAX; ++k) {
+                        if (root->children[i]->children[j]->children[k] != nullptr) {
+                            cout << "==" << (char)(k + ' ') << endl;
+                            
+                        }
+                    }
+                }
+            }
         }
     }
     cout << root->start << endl;
