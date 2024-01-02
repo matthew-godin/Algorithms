@@ -106,7 +106,8 @@ public:
 int main() {
     vector<string> patterns = { "he", "she", "his", "hers" };
     AhoCorasickTrie ahoCorasickTrie(patterns);
-    ahoCorasickTrie.search("ahishers");
+    
+    //ahoCorasickTrie.search("ahishers");
     ahoCorasickTrie.clear();
 
     return 0;
