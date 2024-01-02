@@ -18,7 +18,6 @@ struct AhoCorasickNode {
 
 class AhoCorasickTrie {
     AhoCorasickNode* root;
-    vector<string> myPatterns;
 
     void clearRecursion(AhoCorasickNode* currentNode) {
         for (auto iter = currentNode->edges.begin();
@@ -29,8 +28,7 @@ class AhoCorasickTrie {
     }
 
 public:
-    AhoCorasickTrie(vector<string> patterns) {
-        myPatterns = patterns;
+    AhoCorasickTrie(const vector<string> &patterns) {
         root = new AhoCorasickNode(patterns.size(), true);
         AhoCorasickNode* currentNode;
         for (int i = 0; i < patterns.size(); ++i) {
@@ -84,16 +82,12 @@ public:
                 }
                 currentNode = currentNode->failNode;
             }
-            cout << text[i] << " " << (*currentNode->patternsMatched)[0]
-                << " " << (*currentNode->patternsMatched)[1]
-                << " " << (*currentNode->patternsMatched)[2]
-                << " " << (*currentNode->patternsMatched)[3] << endl;
+            currentNode = currentNode->edges[text[i]];
             for (int j = 0; j < currentNode->patternsMatched->size(); ++j) {
                 if ((*currentNode->patternsMatched)[j]) {
-                    cout << "Found " << myPatterns[j] << endl;
+                    cout << "Found " << j << endl;
                 }
             }
-            currentNode = currentNode->edges[text[i]];
             searchL1: ;
         }
     }
@@ -106,8 +100,7 @@ public:
 int main() {
     vector<string> patterns = { "he", "she", "his", "hers" };
     AhoCorasickTrie ahoCorasickTrie(patterns);
-    
-    //ahoCorasickTrie.search("ahishers");
+    ahoCorasickTrie.search("ahishers");
     ahoCorasickTrie.clear();
 
     return 0;
